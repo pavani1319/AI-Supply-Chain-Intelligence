@@ -1,0 +1,6 @@
+{
+  "name": "AI Supply Chain Intelligence – Demand Forecasting & Inventory Risk Management",
+  "description": "Comprehensive AI-driven supply chain intelligence platform integrating Kaggle dataset analytics, Scikit-learn Random Forest demand forecasting, statistical safety stock and reorder point optimization, explainable multi-factor risk assessment, regional logistics tracking, and master SKU catalog explorer.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
