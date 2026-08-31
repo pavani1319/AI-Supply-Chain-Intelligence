@@ -7,6 +7,7 @@ import { createServer as createViteServer } from 'vite';
 
 const PORT = process.env.PORT ? parseInt(process.env.PORT, 10) : 3000;
 const PYTHON_PORT = 8085;
+const BACKEND_URL = process.env.BACKEND_URL || 'https://ai-supply-chain-api.onrender.com';
 
 let pythonProcess: ChildProcess | null = null;
 
@@ -88,6 +89,11 @@ function trySpawnPython(candidates: string[], index: number, resolve: () => void
 }
 
 async function startPythonBackend(): Promise<void> {
+  if (process.env.NODE_ENV === 'production') {
+    console.log(`[Backend] Production environment detected. Using deployed FastAPI backend at: ${BACKEND_URL}`);
+    return;
+  }
+
   const active = await isBackendHealthy(PYTHON_PORT);
   if (active) {
     console.log(`[Backend] Active Python FastAPI server detected on http://127.0.0.1:${PYTHON_PORT}. Reusing backend.`);
@@ -108,9 +114,15 @@ async function startServer() {
 
   const app = express();
 
+  const targetUrl = process.env.NODE_ENV === 'production'
+    ? BACKEND_URL
+    : `http://127.0.0.1:${PYTHON_PORT}`;
+
+  console.log(`[Proxy] Forwarding /api requests to: ${targetUrl}`);
+
   // Proxy /api/* directly to the Python FastAPI backend
   const apiProxy = createProxyMiddleware({
-    target: `http://127.0.0.1:${PYTHON_PORT}`,
+    target: targetUrl,
     changeOrigin: true,
     ws: false,
     pathRewrite: (pathStr) => {
